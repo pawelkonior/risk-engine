@@ -1,0 +1,13 @@
+{
+  "name": "template-agent-tools",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Local CLI tools for the repository's official agent skills",
+  "engines": {
+    "node": ">=20.12"
+  },
+  "packageManager": "npm@12.2.2",
+  "dependencies": {
+    "@langfuse/cli": "1.3.1"
+  }
+}

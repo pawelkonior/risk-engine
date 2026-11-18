@@ -1,0 +1,407 @@
+name: template-ai
+
+x-api: &api
+  image: template-ai-api:local
+  build:
+    context: ./api
+  init: true
+  read_only: true
+  tmpfs:
+    - /tmp
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  environment: &api-environment
+    APP_ENVIRONMENT: local
+    APP_DOCS_ENABLED: "true"
+    APP_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-app}@postgres:5432/${POSTGRES_DB:-app}
+    PGPASSWORD: ${POSTGRES_PASSWORD:-app-local-only}
+    APP_AI_ENABLED: "true"
+    APP_AI_OLLAMA_BASE_URL: http://ollama:11434
+    APP_AI_CHAT_MODEL: ${OLLAMA_CHAT_MODEL:-qwen3:0.6b}
+    APP_AI_EMBEDDING_MODEL: ${OLLAMA_EMBEDDING_MODEL:-embeddinggemma}
+    APP_AI_EMBEDDING_DIMENSIONS: ${OLLAMA_EMBEDDING_DIMENSIONS:-768}
+    APP_AI_QDRANT_URL: http://qdrant:6333
+    APP_AI_QDRANT_COLLECTION: ${QDRANT_COLLECTION:-app_chunks_ollama_v1}
+    APP_AI_NEO4J_URI: bolt://neo4j:7687
+    APP_AI_NEO4J_PASSWORD: ${NEO4J_PASSWORD:-neo4j-local-only}
+    LANGSMITH_TRACING: "false"
+    LANGCHAIN_TRACING_V2: "false"
+    APP_LANGFUSE_ENABLED: "true"
+    APP_LANGFUSE_BASE_URL: http://langfuse-web:3000
+    APP_LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-pk-lf-template-local}
+    APP_LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-sk-lf-template-local}
+    APP_LANGFUSE_CAPTURE_CONTENT: ${LANGFUSE_CAPTURE_CONTENT:-false}
+    APP_LANGFUSE_TIMEOUT_SECONDS: ${LANGFUSE_TIMEOUT_SECONDS:-3}
+
+x-langfuse-environment: &langfuse-environment
+  HOSTNAME: 0.0.0.0
+  NEXTAUTH_URL: http://localhost:${LANGFUSE_PORT:-3000}
+  DATABASE_URL: ${LANGFUSE_DATABASE_URL:-postgresql://langfuse:${LANGFUSE_POSTGRES_PASSWORD:-langfuse-local-only}@langfuse-postgres:5432/langfuse}
+  SALT: ${LANGFUSE_SALT:-langfuse-salt-local-only-2026}
+  ENCRYPTION_KEY: ${LANGFUSE_ENCRYPTION_KEY:-0000000000000000000000000000000000000000000000000000000000000000}
+  TELEMETRY_ENABLED: "false"
+  NEXT_TELEMETRY_DISABLED: "1"
+  # Suppress the platform's own instrumentation, not its ingestion HTTP API.
+  OTEL_SDK_DISABLED: "true"
+  DD_TRACE_ENABLED: "false"
+  DD_INSTRUMENTATION_TELEMETRY_ENABLED: "false"
+  DD_RUNTIME_METRICS_ENABLED: "false"
+  DD_PROFILING_ENABLED: "false"
+  LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES: "false"
+  LANGFUSE_IN_APP_AGENT_ENABLED: "false"
+  LANGFUSE_AI_GATEWAY_ENABLED: "false"
+  NODE_OPTIONS: --max-old-space-size=1536
+  CLICKHOUSE_MIGRATION_URL: clickhouse://langfuse-clickhouse:9000
+  CLICKHOUSE_URL: http://langfuse-clickhouse:8123
+  CLICKHOUSE_USER: langfuse
+  CLICKHOUSE_PASSWORD: ${LANGFUSE_CLICKHOUSE_PASSWORD:-langfuse-clickhouse-local-only}
+  CLICKHOUSE_CLUSTER_ENABLED: "false"
+  REDIS_HOST: langfuse-redis
+  REDIS_PORT: "6379"
+  REDIS_AUTH: ${LANGFUSE_REDIS_PASSWORD:-langfuse-redis-local-only}
+  REDIS_TLS_ENABLED: "false"
+  LANGFUSE_S3_EVENT_UPLOAD_BUCKET: langfuse
+  LANGFUSE_S3_EVENT_UPLOAD_REGION: us-east-1
+  LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${LANGFUSE_S3_ACCESS_KEY:-langfuse-local}
+  LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${LANGFUSE_S3_SECRET_KEY:-langfuse-s3-local-only-2026}
+  LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: http://langfuse-s3:9000
+  LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: "true"
+  LANGFUSE_S3_EVENT_UPLOAD_PREFIX: events/
+  LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: langfuse
+  LANGFUSE_S3_MEDIA_UPLOAD_REGION: us-east-1
+  LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${LANGFUSE_S3_ACCESS_KEY:-langfuse-local}
+  LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${LANGFUSE_S3_SECRET_KEY:-langfuse-s3-local-only-2026}
+  LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://langfuse-s3:9000
+  LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: "true"
+  LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: media/
+  LANGFUSE_S3_BATCH_EXPORT_ENABLED: "false"
+
+x-langfuse-dependencies: &langfuse-dependencies
+  langfuse-postgres:
+    condition: service_healthy
+  langfuse-clickhouse:
+    condition: service_healthy
+  langfuse-redis:
+    condition: service_healthy
+  langfuse-s3-init:
+    condition: service_completed_successfully
+
+x-langfuse-logging: &langfuse-logging
+  driver: local
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  langfuse-web:
+    image: langfuse/langfuse:4.82.0
+    restart: unless-stopped
+    mem_limit: 2g
+    security_opt:
+      - no-new-privileges:true
+    depends_on: *langfuse-dependencies
+    ports:
+      - "127.0.0.1:${LANGFUSE_PORT:-3000}:3000"
+    environment:
+      <<: *langfuse-environment
+      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:-langfuse-nextauth-local-only-2026}
+      AUTH_DISABLE_SIGNUP: "true"
+      LANGFUSE_DISABLE_SIGNUP_ONBOARDING: "true"
+      LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://localhost:${LANGFUSE_S3_PORT:-9090}
+      LANGFUSE_S3_MEDIA_UPLOAD_INTERNAL_ENDPOINT: http://langfuse-s3:9000
+      LANGFUSE_INIT_ORG_ID: template-local
+      LANGFUSE_INIT_ORG_NAME: Template AI
+      LANGFUSE_INIT_PROJECT_ID: template-local
+      LANGFUSE_INIT_PROJECT_NAME: Template AI
+      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-pk-lf-template-local}
+      LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-sk-lf-template-local}
+      LANGFUSE_INIT_USER_EMAIL: ${LANGFUSE_USER_EMAIL:-developer@example.test}
+      LANGFUSE_INIT_USER_NAME: Developer
+      LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_USER_PASSWORD:-Langfuse-local-only-2026}
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/public/health?failIfDatabaseUnavailable=true', {signal: AbortSignal.timeout(3000)}).then(r => {if (!r.ok) process.exit(1)}).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    logging: *langfuse-logging
+  langfuse-worker:
+    image: langfuse/langfuse-worker:4.82.0
+    restart: unless-stopped
+    mem_limit: 2g
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      <<: *langfuse-dependencies
+      langfuse-web:
+        condition: service_healthy
+    environment: *langfuse-environment
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3030/api/health', {signal: AbortSignal.timeout(3000)}).then(r => {if (!r.ok) process.exit(1)}).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    logging: *langfuse-logging
+  langfuse-postgres:
+    image: postgres:18.7-alpine
+    restart: unless-stopped
+    mem_limit: 512m
+    environment:
+      POSTGRES_DB: langfuse
+      POSTGRES_USER: langfuse
+      POSTGRES_PASSWORD: ${LANGFUSE_POSTGRES_PASSWORD:-langfuse-local-only}
+      TZ: UTC
+      PGTZ: UTC
+    volumes:
+      - langfuse-postgres18-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    logging: *langfuse-logging
+  langfuse-clickhouse:
+    image: clickhouse/clickhouse-server:26.10.5.57
+    restart: unless-stopped
+    user: "101:101"
+    mem_limit: 4g
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: langfuse
+      CLICKHOUSE_PASSWORD: ${LANGFUSE_CLICKHOUSE_PASSWORD:-langfuse-clickhouse-local-only}
+    volumes:
+      - langfuse-clickhouse-data:/var/lib/clickhouse
+      - langfuse-clickhouse-logs:/var/log/clickhouse-server
+    configs:
+      - source: langfuse-clickhouse-no-telemetry
+        target: /etc/clickhouse-server/config.d/no-telemetry.xml
+    healthcheck:
+      test: ["CMD-SHELL", "clickhouse-client --user \"$$CLICKHOUSE_USER\" --password \"$$CLICKHOUSE_PASSWORD\" --query 'SELECT 1' >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    logging: *langfuse-logging
+  langfuse-redis:
+    image: redis:8.10.3-alpine
+    restart: unless-stopped
+    user: redis
+    mem_limit: 512m
+    environment:
+      REDIS_PASSWORD: ${LANGFUSE_REDIS_PASSWORD:-langfuse-redis-local-only}
+    command: ["sh", "-ec", "exec redis-server --requirepass \"$$REDIS_PASSWORD\" --maxmemory 256mb --maxmemory-policy noeviction --appendonly yes"]
+    volumes:
+      - langfuse-redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=\"$$REDIS_PASSWORD\" redis-cli ping | grep -q PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    logging: *langfuse-logging
+  langfuse-s3:
+    image: rustfs/rustfs:1.0.6
+    restart: unless-stopped
+    mem_limit: 1g
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ADDRESS: 0.0.0.0:9000
+      RUSTFS_CONSOLE_ENABLE: "false"
+      RUSTFS_ACCESS_KEY: ${LANGFUSE_S3_ACCESS_KEY:-langfuse-local}
+      RUSTFS_SECRET_KEY: ${LANGFUSE_S3_SECRET_KEY:-langfuse-s3-local-only-2026}
+      RUSTFS_CORS_ALLOWED_ORIGINS: http://localhost:${LANGFUSE_PORT:-3000},http://127.0.0.1:${LANGFUSE_PORT:-3000}
+      RUSTFS_OBS_ENDPOINT: ""
+      RUSTFS_OBS_METRICS_EXPORT_ENABLED: "false"
+      RUSTFS_OBS_TRACES_EXPORT_ENABLED: "false"
+      RUSTFS_OBS_LOGS_EXPORT_ENABLED: "false"
+      RUSTFS_OBS_LOGGER_LEVEL: info
+    ports:
+      - "127.0.0.1:${LANGFUSE_S3_PORT:-9090}:9000"
+    volumes:
+      - langfuse-s3-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:9000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
+    logging: *langfuse-logging
+  langfuse-s3-init:
+    image: rustfs/rc:v0.1.37
+    entrypoint: ["/bin/sh", "-ec"]
+    command: ['rc alias set langfuse http://langfuse-s3:9000 "$$AWS_ACCESS_KEY_ID" "$$AWS_SECRET_ACCESS_KEY" && rc bucket create --ignore-existing langfuse/langfuse']
+    restart: "no"
+    mem_limit: 128m
+    environment:
+      AWS_ACCESS_KEY_ID: ${LANGFUSE_S3_ACCESS_KEY:-langfuse-local}
+      AWS_SECRET_ACCESS_KEY: ${LANGFUSE_S3_SECRET_KEY:-langfuse-s3-local-only-2026}
+    depends_on:
+      langfuse-s3:
+        condition: service_healthy
+    logging: *langfuse-logging
+  neo4j:
+    image: neo4j:2026.10.2-community
+    restart: unless-stopped
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-neo4j-local-only}
+      # Official MCP verifies APOC during its handshake. Use the Core jar
+      # bundled with this pinned Neo4j image and expose only schema metadata.
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_security_procedures_allowlist: apoc.meta.schema
+      NEO4J_dbms_security_procedures_unrestricted: apoc.meta.schema
+      NEO4J_dbms_usage__report_enabled: "false"
+      NEO4J_dbms_fleet__manager_enabled: "false"
+      NEO4J_server_fleet__discovery_enabled: "false"
+      NEO4J_server_bolt_telemetry_enabled: "false"
+      NEO4J_client_allow__telemetry: "false"
+      NEO4J_server_memory_heap_initial__size: 256m
+      NEO4J_server_memory_heap_max__size: 512m
+      NEO4J_server_memory_pagecache_size: 256m
+    ports:
+      - "127.0.0.1:${NEO4J_HTTP_PORT:-7474}:7474"
+      - "127.0.0.1:${NEO4J_BOLT_PORT:-7687}:7687"
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+    healthcheck:
+      test: ["CMD-SHELL", "cypher-shell -a bolt://localhost:7687 -u neo4j -p \"$${NEO4J_AUTH#*/}\" 'RETURN 1' >/dev/null"]
+      interval: 10s
+      timeout: 8s
+      retries: 20
+      start_period: 20s
+  qdrant:
+    image: qdrant/qdrant:v1.20.2-unprivileged
+    restart: unless-stopped
+    environment:
+      QDRANT__TELEMETRY_DISABLED: "true"
+    ports:
+      - "127.0.0.1:${QDRANT_PORT:-6333}:6333"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    healthcheck:
+      test: ["CMD", "bash", "-ec", "exec 3<>/dev/tcp/127.0.0.1/6333; printf 'GET /readyz HTTP/1.0\\r\\n\\r\\n' >&3; IFS= read -r line <&3; [[ \"$$line\" == *' 200 '* ]]"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+  ollama:
+    image: ollama/ollama:0.40.16
+    restart: unless-stopped
+    environment:
+      OLLAMA_NO_CLOUD: "1"
+    ports:
+      - "127.0.0.1:${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+  ollama-models:
+    image: ollama/ollama:0.40.16
+    entrypoint: ["/bin/sh", "-ec"]
+    command: ['ollama pull "$$OLLAMA_CHAT_MODEL" && ollama pull "$$OLLAMA_EMBEDDING_MODEL"']
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+      OLLAMA_CHAT_MODEL: ${OLLAMA_CHAT_MODEL:-qwen3:0.6b}
+      OLLAMA_EMBEDDING_MODEL: ${OLLAMA_EMBEDDING_MODEL:-embeddinggemma}
+    restart: "no"
+    depends_on:
+      ollama:
+        condition: service_healthy
+  ai-init:
+    <<: *api
+    command: ["python", "-m", "app.platform.ai.setup"]
+    restart: "no"
+    healthcheck:
+      disable: true
+    depends_on:
+      neo4j:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      ollama-models:
+        condition: service_completed_successfully
+  postgres:
+    image: postgres:18.7-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app-local-only}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres18-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+  migrate:
+    <<: *api
+    command: ["alembic", "upgrade", "head"]
+    restart: "no"
+    healthcheck:
+      disable: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+  api:
+    <<: *api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${API_PORT:-8000}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      ai-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  web:
+    build:
+      context: ./web
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "127.0.0.1:${WEB_PORT:-8080}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+
+configs:
+  langfuse-clickhouse-no-telemetry:
+    content: |
+      <clickhouse>
+        <send_crash_reports>
+          <enabled>false</enabled>
+          <send_logical_errors>false</send_logical_errors>
+        </send_crash_reports>
+      </clickhouse>
+
+volumes:
+  postgres18-data:
+  langfuse-postgres18-data:
+  langfuse-clickhouse-data:
+  langfuse-clickhouse-logs:
+  langfuse-redis-data:
+  langfuse-s3-data:
+  neo4j-data:
+  neo4j-logs:
+  qdrant-data:
+  ollama-models:

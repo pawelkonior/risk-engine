@@ -1,0 +1,11 @@
+Migrations are explicit release commands, never application startup side effects.
+
+uv run alembic upgrade head
+uv run alembic check
+uv run alembic revision --autogenerate -m "Describe schema change"
+
+Use APP_DATABASE_MIGRATION_URL (or DIRECT_DATABASE_URL) for a direct PostgreSQL
+connection when APP_DATABASE_URL points at a transaction pooler. Import each new
+model in migrations/env.py before generating its migration. Review generated SQL
+on both SQLite and PostgreSQL; SQLite table alterations use Alembic batch mode.
+Never point a Preview deployment or test suite at a production database.

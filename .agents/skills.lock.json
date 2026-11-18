@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-11-18",
+  "skills": [
+    {
+      "name": "fastapi",
+      "repository": "fastapi/fastapi",
+      "ref": "a3260d49e97b0072c4c0c161d9f63cc3826584b5",
+      "path": "fastapi/.agents/skills/fastapi",
+      "license": "MIT",
+      "license_path": ".agents/skills/fastapi/LICENSE",
+      "auxiliaryFiles": [
+        {
+          "path": ".agents/skills/fastapi/LICENSE",
+          "sourcePath": "LICENSE",
+          "sha256": "4ec89ffc81485b97fec584b2d4a961032eeffe834453894fd9c1274906cc744e"
+        }
+      ],
+      "installedPath": ".agents/skills/fastapi"
+    },
+    {
+      "name": "langchain-build-agent",
+      "repository": "langchain-ai/langchain-skills",
+      "ref": "51bbd97b911871406d2a0099dd29df0d55ff9897",
+      "path": "skills/langchain-build-agent",
+      "license": "MIT",
+      "license_path": ".agents/skills/langchain-build-agent/LICENSE",
+      "auxiliaryFiles": [
+        {
+          "path": ".agents/skills/langchain-build-agent/LICENSE",
+          "sourcePath": "LICENSE",
+          "sha256": "4ec67e4ca6e6721dba849b2ca82261597c86a61ee214bbf21416006b7b2d0478"
+        }
+      ],
+      "installedPath": ".agents/skills/langchain-build-agent"
+    },
+    {
+      "name": "langfuse",
+      "repository": "langfuse/skills",
+      "ref": "f0bcb13088b490c04b3f4870bace17f6d57b199c",
+      "path": "skills/langfuse",
+      "license": "MIT",
+      "license_path": ".agents/skills/langfuse/LICENSE",
+      "auxiliaryFiles": [
+        {
+          "path": ".agents/skills/langfuse/LICENSE",
+          "sourcePath": "LICENSE",
+          "sha256": "c516c4e125d1c11a13637602a8e0b88c1453b07b209277b4db1fe3e3e3c380fa"
+        }
+      ],
+      "installedPath": ".agents/skills/langfuse"
+    },
+    {
+      "name": "playwright-cli",
+      "repository": "microsoft/playwright-cli",
+      "ref": "99c4eb2566153f37fb104e5dbf894fb9c785e17d",
+      "path": "skills/playwright-cli",
+      "license": "Apache-2.0",
+      "license_path": ".agents/vendor-licenses/microsoft-playwright-cli/LICENSE",
+      "auxiliaryFiles": [
+        {
+          "sourcePath": "LICENSE",
+          "path": ".agents/vendor-licenses/microsoft-playwright-cli/LICENSE",
+          "sha256": "9a7110fc2d2f964038e5dc49128f908f29f47a574c961cba16085914e879cbda"
+        }
+      ],
+      "installedPath": ".agents/skills/playwright-cli"
+    },
+    {
+      "name": "postgres-best-practices",
+      "repository": "neondatabase/postgres-skills",
+      "ref": "27fe45e0f71ea89a6eaf9ea4d2e4068957c81c26",
+      "path": "skills/postgres-best-practices",
+      "license": "Apache-2.0",
+      "license_path": ".agents/skills/postgres-best-practices/LICENSE",
+      "auxiliaryFiles": [
+        {
+          "path": ".agents/skills/postgres-best-practices/LICENSE",
+          "sourcePath": "LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ],
+      "installedPath": ".agents/skills/postgres-best-practices"
+    },
+    {
+      "name": "pull-request-authoring",
+      "repository": "github/github-mcp-server",
+      "ref": "67d4dc489700ec955ad255d098396dd86c729523",
+      "path": "pkg/skills/catalog/skills/pull-request-authoring",
+      "license": "MIT",
+      "license_path": ".agents/vendor-licenses/github-github-mcp-server/LICENSE",
+      "auxiliaryFiles": [
+        {
+          "sourcePath": "LICENSE",
+          "path": ".agents/vendor-licenses/github-github-mcp-server/LICENSE",
+          "sha256": "9e48ecfa18e2b15169746a3c97beda4d1d6c6796097038498ca434ca7e0ccd44"
+        }
+      ],
+      "installedPath": ".agents/skills/pull-request-authoring"
+    },
+    {
+      "name": "pull-request-review-feedback",
+      "repository": "github/github-mcp-server",
+      "ref": "67d4dc489700ec955ad255d098396dd86c729523",
+      "path": "pkg/skills/catalog/skills/pull-request-review-feedback",
+      "license": "MIT",
+      "license_path": ".agents/vendor-licenses/github-github-mcp-server/LICENSE",
+      "auxiliaryFiles": [
+        {
+          "sourcePath": "LICENSE",
+          "path": ".agents/vendor-licenses/github-github-mcp-server/LICENSE",
+          "sha256": "9e48ecfa18e2b15169746a3c97beda4d1d6c6796097038498ca434ca7e0ccd44"
+        }
+      ],
+      "installedPath": ".agents/skills/pull-request-review-feedback"
+    },
+    {
+      "name": "qdrant-advisor",
+      "repository": "qdrant/skills",
+      "ref": "5f9622219114df85877e9ea88479feac54a466cf",
+      "path": "meta/qdrant-advisor",
+      "license": "Apache-2.0",
+      "license_path": ".agents/skills/qdrant-advisor/LICENSE",
+      "auxiliaryFiles": [
+        {
+          "path": ".agents/skills/qdrant-advisor/LICENSE",
+          "sourcePath": "LICENSE",
+          "sha256": "210b508429e913d9de5301f90508bc2cbf5b2281de5b45e607c04d58f0f3bd8f"
+        }
+      ],
+      "installedPath": ".agents/skills/qdrant-advisor"
+    },
+    {
+      "name": "search-company-knowledge",
+      "repository": "atlassian/atlassian-mcp-server",
+      "ref": "352a02b05189e2a958a973867cc6eca365cb8fc3",
+      "path": "skills/search-company-knowledge",
+      "license": "Apache-2.0",
+      "license_path": ".agents/vendor-licenses/atlassian-atlassian-mcp-server/LICENSE",
+      "auxiliaryFiles": [
+        {
+          "sourcePath": "LICENSE",
+          "path": ".agents/vendor-licenses/atlassian-atlassian-mcp-server/LICENSE",
+          "sha256": "fff3bdc1d0125e492d7a2cb866c01a8ab587dee0405e77440ca524205a1f8c28"
+        }
+      ],
+      "installedPath": ".agents/skills/search-company-knowledge"
+    },
+    {
+      "name": "triage-issue",
+      "repository": "atlassian/atlassian-mcp-server",
+      "ref": "352a02b05189e2a958a973867cc6eca365cb8fc3",
+      "path": "skills/triage-issue",
+      "license": "Apache-2.0",
+      "license_path": ".agents/vendor-licenses/atlassian-atlassian-mcp-server/LICENSE",
+      "auxiliaryFiles": [
+        {
+          "sourcePath": "LICENSE",
+          "path": ".agents/vendor-licenses/atlassian-atlassian-mcp-server/LICENSE",
+          "sha256": "fff3bdc1d0125e492d7a2cb866c01a8ab587dee0405e77440ca524205a1f8c28"
+        }
+      ],
+      "installedPath": ".agents/skills/triage-issue"
+    },
+    {
+      "name": "vercel-react-best-practices",
+      "repository": "vercel-labs/agent-skills",
+      "ref": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62",
+      "path": "skills/react-best-practices",
+      "license": "MIT",
+      "license_path": ".agents/skills/vercel-react-best-practices/SKILL.md",
+      "auxiliaryFiles": [],
+      "installedPath": ".agents/skills/vercel-react-best-practices"
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+# Local checks only; no remote hook repositories.
+minimum_pre_commit_version: "4.0.0"
+default_install_hook_types: [pre-commit]
+repos:
+  - repo: local
+    hooks:
+      - id: agent-tools
+        name: Agent CLI environment checks
+        entry: node --test .agents/run-langfuse.test.mjs
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: ruff
+        name: Ruff lint
+        entry: uv run --project api --locked python api/scripts/checks.py lint
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: ruff-format
+        name: Ruff format
+        entry: uv run --project api --locked python api/scripts/checks.py format
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: pyright
+        name: Strict Pyright
+        entry: uv run --project api --locked python api/scripts/checks.py type
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: pytest
+        name: Tests and coverage (90%, with branches)
+        entry: uv run --project api --locked python api/scripts/checks.py test
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: docs
+        name: Sphinx documentation (warnings as errors)
+        entry: uv run --project api --locked python api/scripts/checks.py docs
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: web-lint
+        name: Web type-aware lint
+        entry: npm --prefix web run lint
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: web-format
+        name: Web formatting
+        entry: npm --prefix web run format:check
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: web-types
+        name: Web strict TypeScript
+        entry: npm --prefix web run typecheck
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: web-unit
+        name: Web unit tests and coverage (90%)
+        entry: npm --prefix web run test
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: web-playwright
+        name: Web Playwright Chromium and production build
+        entry: npm --prefix web run test:e2e -- --project=chromium
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: compose
+        name: Docker Compose configuration
+        entry: docker compose config --quiet
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true

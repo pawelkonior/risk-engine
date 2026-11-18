@@ -1,0 +1,31 @@
+version = 1
+revision = 5
+requires-python = ">=3.14, <3.15"
+
+[manifest]
+requirements = [
+    { name = "neo4j-mcp-server", specifier = "==2.1.1" },
+    { name = "python-dotenv", specifier = "==1.2.4" },
+]
+
+[[package]]
+name = "neo4j-mcp-server"
+version = "2.1.1"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9c/d1/edb1c62ea344dec694f15a78c9d598dc3dc3b8d58404ecebcc23fc0d3dec/neo4j_mcp_server-2.1.1-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:f570ad2806a384d315ecd45c628f8d303ee00ad9f9d79b652c34c69974ccff46", size = 11200982, upload-time = "2026-11-11T13:25:34.173Z" },
+    { url = "https://files.pythonhosted.org/packages/1a/d7/518f72eee5c9631962cc56a603ebc6e07a02d91be540de8b6d3936a9cdc4/neo4j_mcp_server-2.1.1-py3-none-macosx_11_0_arm64.whl", hash = "sha256:9b29231551477f8c2c9d686d55844f1ee77ba0a6915b4792cac4f0fe0be1b41e", size = 10416986, upload-time = "2026-11-11T13:25:36.665Z" },
+    { url = "https://files.pythonhosted.org/packages/85/a0/5adc4f78b435ad9bc3a2b0939d2cffaa33c90cc1d991f383f235bab3dd55/neo4j_mcp_server-2.1.1-py3-none-manylinux_2_17_aarch64.whl", hash = "sha256:45ccaa387c2cbdd4e21dceac951b4d703adee88fb723f90235ecaa3d5d1a6f4a", size = 10161677, upload-time = "2026-11-11T13:25:38.897Z" },
+    { url = "https://files.pythonhosted.org/packages/a7/0b/8cd86fb0b9c76613980b2cd9e0c91801f43175b16259715e39997e96023f/neo4j_mcp_server-2.1.1-py3-none-manylinux_2_17_x86_64.whl", hash = "sha256:5232644043884ba969574821dd6bd0b3055b8b6899a0da05834e8073383bdec1", size = 10923527, upload-time = "2026-11-11T13:25:41.084Z" },
+    { url = "https://files.pythonhosted.org/packages/18/14/a070711be88721131b484c4f565e14adb342001536cda0c6d14f816b0617/neo4j_mcp_server-2.1.1-py3-none-win_amd64.whl", hash = "sha256:eee62fdcbeb9bd45707bc1dd77a5fab12b9a338d1024c61f4fa149e97fb4e4a9", size = 11229037, upload-time = "2026-11-11T13:25:43.047Z" },
+    { url = "https://files.pythonhosted.org/packages/8b/7a/14a647dd2c692dcd57042b0aebccb2220fc7573c4af71a602f3c4507474c/neo4j_mcp_server-2.1.1-py3-none-win_arm64.whl", hash = "sha256:2186378033295236239fc16ea73d68b8130452bcf2dc26a02c4d1844e6014279", size = 10236783, upload-time = "2026-11-11T13:25:44.82Z" },
+]
+
+[[package]]
+name = "python-dotenv"
+version = "1.2.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/74/26/2fbeedb218a787a5eea551c7532cac4e009f83d689dd2faa0d0353473f86/python_dotenv-1.2.4.tar.gz", hash = "sha256:f0d53e69935a851c0dcc78f3ab7aaccd8cabef0b92382b576b824212902873c0", size = 60824, upload-time = "2026-10-01T05:36:10Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/60/d1/38f3a3405989a89ac18390803e70c6ad7c7760da4f9b83cbeca0c44a0c72/python_dotenv-1.2.4-py3-none-any.whl", hash = "sha256:42269a8a5b3fd54ffa6f3d84b18abed50064717576b4ecf03dc4a55d8aa04fdc", size = 23266, upload-time = "2026-10-01T05:36:08.633Z" },
+]

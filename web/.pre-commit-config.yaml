@@ -1,0 +1,41 @@
+# Local web quality checks.
+minimum_pre_commit_version: '4.0.0'
+default_install_hook_types: [pre-commit]
+repos:
+  - repo: local
+    hooks:
+      - id: web-lint
+        name: Web type-aware lint
+        entry: npm run lint
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: web-format
+        name: Web formatting
+        entry: npm run format:check
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: web-types
+        name: Web strict TypeScript
+        entry: npm run typecheck
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: web-unit
+        name: Web unit tests and coverage (90%)
+        entry: npm run test
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: web-playwright
+        name: Web Playwright Chromium and production build
+        entry: npm run test:e2e -- --project=chromium
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true

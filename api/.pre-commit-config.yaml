@@ -1,0 +1,41 @@
+# Local checks only; no remote hook repositories.
+minimum_pre_commit_version: "4.0.0"
+default_install_hook_types: [pre-commit]
+repos:
+  - repo: local
+    hooks:
+      - id: ruff
+        name: Ruff lint
+        entry: uv run --project . --locked python scripts/checks.py lint
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: ruff-format
+        name: Ruff format
+        entry: uv run --project . --locked python scripts/checks.py format
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: pyright
+        name: Strict Pyright
+        entry: uv run --project . --locked python scripts/checks.py type
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: pytest
+        name: Tests and coverage (90%, with branches)
+        entry: uv run --project . --locked python scripts/checks.py test
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: docs
+        name: Sphinx documentation (warnings as errors)
+        entry: uv run --project . --locked python scripts/checks.py docs
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true

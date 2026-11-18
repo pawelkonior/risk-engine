@@ -1,0 +1,7 @@
+.env
+.env.*
+!.env.example
+.DS_Store
+.tmp/
+.agents/tools/node_modules/
+.playwright-cli/

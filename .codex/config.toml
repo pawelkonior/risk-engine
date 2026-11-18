@@ -1,0 +1,51 @@
+# Project-scoped MCP configuration. Credentials stay in the user's environment
+# or Codex's OAuth store. See docs/agent-tooling.md.
+
+[mcp_servers.langchain-docs]
+url = "https://docs.langchain.com/mcp"
+enabled_tools = ["search_docs_by_lang_chain", "query_docs_filesystem_docs_by_lang_chain"]
+startup_timeout_sec = 30
+tool_timeout_sec = 60
+
+[mcp_servers.langchain-reference]
+url = "https://reference.langchain.com/mcp"
+enabled_tools = ["search_api", "get_symbol"]
+startup_timeout_sec = 30
+tool_timeout_sec = 60
+
+[mcp_servers.langfuse-docs]
+url = "https://langfuse.com/api/mcp"
+enabled_tools = ["searchLangfuseDocs", "getLangfuseDocsPage", "getLangfuseOverview"]
+startup_timeout_sec = 30
+tool_timeout_sec = 60
+
+[mcp_servers.qdrant-docs]
+url = "https://search.qdrant.tech/mcp"
+enabled_tools = ["get_page", "list_docs", "search_docs", "search_snippets"]
+startup_timeout_sec = 30
+tool_timeout_sec = 60
+
+[mcp_servers.github]
+url = "https://api.githubcopilot.com/mcp/"
+http_headers = { "X-MCP-Toolsets" = "context,repos,pull_requests" }
+# Use an explicit environment token first, then the existing gh login. The
+# helper's stdout goes directly to Codex; never run it to display credentials.
+http_headers_helper = '''python3 -c 'import json,os,subprocess; token=os.getenv("GITHUB_PERSONAL_ACCESS_TOKEN") or os.getenv("GH_TOKEN") or os.getenv("GITHUB_TOKEN") or subprocess.check_output(["gh","auth","token","--hostname","github.com"], text=True, stderr=subprocess.DEVNULL).strip(); print(json.dumps({"Authorization":"Bearer "+token}))' '''
+startup_timeout_sec = 30
+tool_timeout_sec = 60
+
+[mcp_servers.atlassian]
+url = "https://mcp.atlassian.com/v2/mcp"
+startup_timeout_sec = 30
+tool_timeout_sec = 60
+
+[mcp_servers.neo4j]
+# Locate the checkout from either its root or a nested api/ or web/ directory.
+# MCP cwd/args are literal paths in Codex 0.169; avoid machine-specific paths.
+command = "sh"
+args = ["-c", '''task_root="$PWD"; while [ ! -f "$task_root/.codex/neo4j_mcp.py" ]; do [ "$task_root" != / ] || { echo "Run Codex inside the template checkout." >&2; exit 1; }; task_root=$(dirname "$task_root"); done; exec uv run --no-project --locked --script "$task_root/.codex/neo4j_mcp.py"''']
+env_vars = ["NEO4J_MCP_URI", "NEO4J_MCP_USERNAME", "NEO4J_MCP_PASSWORD", "NEO4J_MCP_DATABASE", "NEO4J_BOLT_PORT", "NEO4J_PASSWORD"]
+# APOC Core's schema procedure is enabled in the local Compose image.
+enabled_tools = ["get-schema", "read-cypher"]
+startup_timeout_sec = 60
+tool_timeout_sec = 60
