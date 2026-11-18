@@ -17,6 +17,18 @@ main {
   max-width: 1100px;
   margin: 0 auto;
 }
+.application-menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  max-width: 1100px;
+  margin: 0 auto 24px;
+}
+.application-menu button[aria-pressed='true'] {
+  color: #fff;
+  background: #185abc;
+  border-color: #185abc;
+}
 button,
 input,
 textarea {
