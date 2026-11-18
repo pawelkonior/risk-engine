@@ -13,9 +13,29 @@ body {
   margin: 24px;
   min-width: 272px;
 }
-main {
+main,
+.app-header {
   max-width: 1100px;
   margin: 0 auto;
+}
+.app-header {
+  margin-block-end: 16px;
+}
+.status-menu {
+  inline-size: fit-content;
+  max-inline-size: 100%;
+}
+.status-menu summary {
+  cursor: pointer;
+  list-style-position: inside;
+}
+.status-menu nav {
+  margin-block-start: 8px;
+}
+.status-menu a {
+  display: inline-block;
+  padding-block: 4px;
+  color: #185abc;
 }
 button,
 input,

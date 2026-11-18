@@ -1,6 +1,6 @@
 # Application starter
 
-Gotowa templatka aplikacji: React i TypeScript w `web`, FastAPI w `api`, PostgreSQL albo SQLite oraz wspólne uruchamianie przez Docker Compose. Szkielet AI używa LangGraph, lokalnej Ollamy, Neo4j dla grafu wiedzy i źródeł oraz Qdrant dla wektorów. Strona główna wyświetla tylko tekst „Aplikacja działa.”. Przykładowy CRUD `items` jest dostępny w API i pozostaje w kodzie frontendu do wykorzystania przy budowie aplikacji. Uwierzytelnianie i uprawnienia dodajesz do konkretnej aplikacji.
+Gotowa templatka aplikacji: React i TypeScript w `web`, FastAPI w `api`, PostgreSQL albo SQLite oraz wspólne uruchamianie przez Docker Compose. Szkielet AI używa LangGraph, lokalnej Ollamy, Neo4j dla grafu wiedzy i źródeł oraz Qdrant dla wektorów. Strona główna wyświetla komunikat „Aplikacja działa.”, do którego prowadzi odnośnik „Stan aplikacji” w zwijanym menu. Przykładowy CRUD `items` jest dostępny w API i pozostaje w kodzie frontendu do wykorzystania przy budowie aplikacji. Uwierzytelnianie i uprawnienia dodajesz do konkretnej aplikacji.
 
 Jakość sprawdzamy lokalnie: strict TypeScript, lintowanie z informacją o typach, Prettier, Vitest, Playwright, Ruff, strict Pyright, pytest i dokumentacja. Audytu zależności ani GitHub Actions nie ma. Telemetria FastAPI, LangSmith i baz AI jest jawnie wyłączona; logi JSON i identyfikatory żądań zostają. Langfuse zapisuje świadomie skonfigurowane ślady operacji AI, domyślnie bez treści promptów i odpowiedzi.
 
@@ -130,7 +130,7 @@ uv run --project api --locked pre-commit run --all-files
 
 Domyślny `make e2e` buduje frontend, startuje Vite preview na `4173` i oddzielne API na `8001`. API dostaje tymczasowy plik SQLite, wykonuje migracje, a po zakończeniu testów proces i dane są sprzątane. Ten tryb nie korzysta z developerskiej bazy. Wolne porty są wymagane; można je zmienić przez `E2E_WEB_PORT` i `E2E_API_PORT`.
 
-Testy sprawdzają prostą stronę główną, dostępność przez axe, brak poziomego przewijania, rzeczywiste połączenie z API przez proxy i operacje CRUD wykonywane klientem HTTP. Potwierdzają również, że strona główna wyświetla tekst bez dostępu do API. Testy sprzątają wyłącznie własne rekordy.
+Testy sprawdzają obsługę menu klawiaturą, dostępność przez axe, brak poziomego przewijania, rzeczywiste połączenie z API przez proxy i operacje CRUD wykonywane klientem HTTP. Potwierdzają również, że strona główna wyświetla komunikat bez dostępu do API. Testy sprzątają wyłącznie własne rekordy.
 
 Drugi tryb testuje działający frontend i API, na przykład Compose:
 

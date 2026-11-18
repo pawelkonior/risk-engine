@@ -23,11 +23,14 @@ const test = base.extend<{ createdItems: string[] }>({
   },
 });
 
-test('renders a plain accessible page at the configured viewport', async ({ page }) => {
+test('renders an accessible page at the configured viewport with the menu open', async ({
+  page,
+}) => {
   await page.goto('/');
   await expect(page).toHaveTitle('Aplikacja');
   await expect(page.getByRole('main')).toHaveText('Aplikacja działa.');
-  await expect(page.getByRole('button')).toHaveCount(0);
+  await page.getByText('Menu', { exact: true }).click();
+  await expect(page.getByRole('navigation', { name: 'Nawigacja główna' })).toBeVisible();
   const viewport = await page.evaluate(() => ({
     content: document.documentElement.scrollWidth,
     viewport: window.innerWidth,
@@ -42,6 +45,24 @@ test('renders a plain accessible page at the configured viewport', async ({ page
       targets: violation.nodes.map((node) => node.target),
     })),
   ).toEqual([]);
+});
+
+test('opens the menu and focuses the application status using the keyboard', async ({ page }) => {
+  await page.goto('/');
+  const menu = page.getByText('Menu', { exact: true });
+  const statusLink = page.getByRole('link', { name: 'Stan aplikacji' });
+  await expect(statusLink).toBeHidden();
+
+  await page.keyboard.press('Tab');
+  await expect(menu).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(statusLink).toBeVisible();
+  await page.keyboard.press('Tab');
+  await expect(statusLink).toBeFocused();
+  await page.keyboard.press('Enter');
+
+  await expect(page).toHaveURL(/#app-status$/);
+  await expect(page.getByRole('main')).toBeFocused();
 });
 
 test('connects the frontend proxy to the real API and persists an example resource', async ({
