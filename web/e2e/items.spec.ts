@@ -23,11 +23,28 @@ const test = base.extend<{ createdItems: string[] }>({
   },
 });
 
-test('renders a plain accessible page at the configured viewport', async ({ page }) => {
-  await page.goto('/');
+test('renders accessible start navigation at the configured viewport', async ({
+  browserName,
+  page,
+}) => {
+  await page.goto('/?source=navigation-test');
   await expect(page).toHaveTitle('Aplikacja');
   await expect(page.getByRole('main')).toHaveText('Aplikacja działa.');
   await expect(page.getByRole('button')).toHaveCount(0);
+
+  const navigation = page.getByRole('navigation', { name: 'Nawigacja główna' });
+  const startLink = navigation.getByRole('link', { name: 'Start' });
+  await expect(navigation.getByRole('link')).toHaveCount(1);
+  await expect(startLink).toHaveAttribute('href', '/');
+  await expect(startLink).toHaveAttribute('aria-current', 'page');
+  // WebKit on macOS uses Option-Tab to focus links by default.
+  const focusNextLink =
+    browserName === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab';
+  await page.keyboard.press(focusNextLink);
+  await expect(startLink).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL('/');
+
   const viewport = await page.evaluate(() => ({
     content: document.documentElement.scrollWidth,
     viewport: window.innerWidth,

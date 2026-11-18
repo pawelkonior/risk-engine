@@ -1,6 +1,6 @@
 # Application Web
 
-Templatka React i TypeScript z Vite, TanStack Query, walidacją Zod, Vitest i Playwright. Strona główna zawiera wyłącznie tekst „Aplikacja działa.”.
+Templatka React i TypeScript z Vite, TanStack Query, walidacją Zod, Vitest i Playwright. Strona główna ma nagłówek z odnośnikiem „Start” i wyświetla tekst „Aplikacja działa.”.
 
 Kod jest podzielony na `src/app`, `src/features/items` oraz `src/shared`. Przykładowy moduł `items` pozostaje w kodzie wraz z kontraktami API, formularzami, paginacją i testami. Nie jest montowany na stronie głównej. Możesz użyć `ItemsWorkspace` wewnątrz istniejącego providera zapytań, zastępując zawartość `main` w `App.tsx`. Przykład jest publiczny; auth i filtrowanie danych według właściciela są częścią docelowej aplikacji.
 
@@ -69,7 +69,7 @@ npm run test:e2e:ui
 
 Konfiguracja uruchamia produkcyjny build i preview na `4173` oraz API z tymczasowym SQLite na `8001`. Helper korzysta z projektu `../api`, stosuje migracje w osobnym procesie i sprząta bazę po testach. Zmienne developerskiej i produkcyjnej bazy nie są dziedziczone. Własne porty można wybrać przez `E2E_WEB_PORT` i `E2E_API_PORT`.
 
-Projekty przeglądarkowe to `chromium`, `firefox`, `webkit` i `mobile-chromium`. Trzy scenariusze sprawdzają prostą stronę, dostępność i szerokość widoku, rzeczywiste połączenie z API przez proxy wraz z operacjami CRUD klienta HTTP oraz niezależność strony głównej od dostępności API. axe wykonuje automatyczne reguły WCAG 2/2.1 A i AA; nie zastępuje ręcznego przeglądu dostępności.
+Projekty przeglądarkowe to `chromium`, `firefox`, `webkit` i `mobile-chromium`. Trzy scenariusze sprawdzają nawigację klawiaturą, dostępność i szerokość widoku, rzeczywiste połączenie z API przez proxy wraz z operacjami CRUD klienta HTTP oraz niezależność strony głównej od dostępności API. axe wykonuje automatyczne reguły WCAG 2/2.1 A i AA; nie zastępuje ręcznego przeglądu dostępności.
 
 Testowanie działającego Compose albo innego środowiska:
 
