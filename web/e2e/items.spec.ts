@@ -23,11 +23,18 @@ const test = base.extend<{ createdItems: string[] }>({
   },
 });
 
-test('renders a plain accessible page at the configured viewport', async ({ page }) => {
+test('renders an accessible menu at the configured viewport', async ({ page }) => {
   await page.goto('/');
   await expect(page).toHaveTitle('Aplikacja');
-  await expect(page.getByRole('main')).toHaveText('Aplikacja działa.');
-  await expect(page.getByRole('button')).toHaveCount(0);
+  await expect(page.getByRole('main')).toContainText('Aplikacja działa.');
+  await expect(page.getByRole('button')).toHaveCount(2);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Opcja testowa 1');
+  await page.getByRole('button', { name: 'Opcja testowa 2' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Opcja testowa 2');
+  await expect(page.getByRole('button', { name: 'Opcja testowa 2' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
   const viewport = await page.evaluate(() => ({
     content: document.documentElement.scrollWidth,
     viewport: window.innerWidth,
@@ -81,7 +88,7 @@ test('connects the frontend proxy to the real API and persists an example resour
   });
   await page.goto('/');
   await page.reload();
-  await expect(page.getByRole('main')).toHaveText('Aplikacja działa.');
+  await expect(page.getByRole('main')).toContainText('Aplikacja działa.');
   const persisted = await request.get(resource);
   expect(itemSchema.parse(await persisted.json()).title).toBe(updatedTitle);
   expect((await request.delete(resource)).status()).toBe(204);
@@ -98,7 +105,7 @@ test('loads the page without depending on API availability', async ({ page }) =>
   });
   await page.goto('/');
   await page.reload();
-  await expect(page.getByRole('main')).toHaveText('Aplikacja działa.');
+  await expect(page.getByRole('main')).toContainText('Aplikacja działa.');
   expect(apiRequests).toBe(0);
   expect(errors).toEqual([]);
 });
