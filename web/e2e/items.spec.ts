@@ -44,6 +44,39 @@ test('renders a plain accessible page at the configured viewport', async ({ page
   ).toEqual([]);
 });
 
+test('opens the items view from the main menu and preserves navigation on reload', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const menu = page.getByRole('navigation', { name: 'Menu główne' });
+  const home = menu.getByRole('link', { name: 'Strona główna' });
+  const items = menu.getByRole('link', { name: 'Elementy' });
+  await expect(home).toHaveAttribute('aria-current', 'page');
+
+  await page.keyboard.press('Tab');
+  await expect(home).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(items).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/items$/);
+  await expect(items).toHaveAttribute('aria-current', 'page');
+  await expect(home).not.toHaveAttribute('aria-current');
+  await expect(page.getByRole('main').getByRole('heading', { name: 'Elementy' })).toBeVisible();
+
+  await page.reload();
+  await expect(items).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByRole('main').getByRole('heading', { name: 'Elementy' })).toBeVisible();
+  await page.goBack();
+  await expect(home).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByRole('main')).toHaveText('Aplikacja działa.');
+
+  await page.goto('/items');
+  await expect(items).toHaveAttribute('aria-current', 'page');
+  await home.click();
+  await expect(home).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByRole('main')).toHaveText('Aplikacja działa.');
+});
+
 test('connects the frontend proxy to the real API and persists an example resource', async ({
   page,
   request,
